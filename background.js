@@ -1,5 +1,5 @@
 chrome.action.onClicked.addListener(async () => {
-  console.log("[BackGrouped] Click ricevuto");
+  console.log("[BackGrouped] Click received");
 
   await chrome.action.setBadgeText({ text: "..." });
   await chrome.action.setBadgeBackgroundColor({ color: "#f59e0b" });
@@ -11,12 +11,12 @@ chrome.action.onClicked.addListener(async () => {
     const grouped = tabs.filter(
       (t) => t.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE
     );
-    console.log(`[BackGrouped] Tab nei gruppi: ${grouped.length}`);
+    console.log(`[BackGrouped] Tabs in groups: ${grouped.length}`);
 
-    // Ricorda quale tab era attivo nella finestra corrente
+    // Remember which tab was active in the current window
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    // Ricorda lo stato collapsed di ogni gruppo coinvolto
+    // Remember the collapsed state of every involved group
     const groupIds = [...new Set(grouped.map((t) => t.groupId))];
     const groupStates = {};
     for (const gid of groupIds) {
@@ -26,10 +26,10 @@ chrome.action.onClicked.addListener(async () => {
 
     for (const tab of grouped) {
       try {
-        // Attiva il tab per forzare il caricamento della history
+        // Activate the tab to force history to load
         await chrome.tabs.update(tab.id, { active: true });
 
-        // Aspetta che il tab sia completamente caricato/pronto
+        // Wait until the tab is fully loaded/ready
         await new Promise((resolve) => {
           const check = setInterval(async () => {
             const t = await chrome.tabs.get(tab.id);
@@ -38,12 +38,12 @@ chrome.action.onClicked.addListener(async () => {
               resolve();
             }
           }, 50);
-          // Timeout massimo 2 secondi per non bloccarsi
+          // 2-second max timeout to avoid getting stuck
           setTimeout(() => { clearInterval(check); resolve(); }, 2000);
         });
 
         await chrome.tabs.goBack(tab.id);
-        console.log(`[BackGrouped] Back OK su tab ${tab.id} - ${tab.url}`);
+        console.log(`[BackGrouped] Back OK on tab ${tab.id} - ${tab.url}`);
         ok++;
       } catch (e) {
         console.warn(`[BackGrouped] Skipped tab ${tab.id} (${tab.url}): ${e.message}`);
@@ -51,12 +51,12 @@ chrome.action.onClicked.addListener(async () => {
       }
     }
 
-    // Ripristina il tab che era attivo in precedenza
+    // Restore the previously active tab
     if (activeTab) {
       await chrome.tabs.update(activeTab.id, { active: true });
     }
 
-    // Ripristina lo stato collapsed dei gruppi
+    // Restore the collapsed state of each group
     for (const gid of groupIds) {
       if (groupStates[gid]) {
         await chrome.tabGroups.update(gid, { collapsed: true });
@@ -64,7 +64,7 @@ chrome.action.onClicked.addListener(async () => {
     }
 
   } catch (e) {
-    console.error(`[BackGrouped] Errore generale: ${e.message}`);
+    console.error(`[BackGrouped] General error: ${e.message}`);
   }
 
   console.log(`[BackGrouped] Done — ok: ${ok}, skipped: ${skipped}`);
