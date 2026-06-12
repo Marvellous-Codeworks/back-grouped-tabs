@@ -10,7 +10,9 @@ A tiny unpacked Chrome extension that sends a single **Back** navigation to ever
 
 After restarting Chrome, tabs that were suspended by extensions like [The Marvellous Suspender](https://github.com/gioxx/MarvellousSuspender) (or similar tab-suspending extensions) can come back as **blank `chrome://newtab/` pages** instead of their suspended placeholder page — even though the tab's browsing history still contains the correct `suspended.html#...` entry.
 
-This is a known, long-standing Chrome bug related to how *discarded* tabs are restored on session restore: the tab is marked as `discarded`, its `url` may still report the old `suspended.html` page internally, but the rendered content is a blank new-tab page. A manual click on the browser's **Back** button fixes it instantly — Chrome just needs the tab to be "woken up" before `goBack()` will work.
+This is a known Chrome bug related to how *discarded* tabs are restored on session restore: the tab is marked as `discarded`, its `url` may still report the old `suspended.html` page internally, but the rendered content is a blank new-tab page. A manual click on the browser's **Back** button fixes it instantly — Chrome just needs the tab to be "woken up" before `goBack()` will work.
+
+The bug is being tracked at [gioxx/MarvellousSuspender#369](https://github.com/gioxx/MarvellousSuspender/issues/369). A detailed write-up is also available on the [Marvellous Codeworks knowledge base](https://kb.marvellouscode.works/blog/tms-tab-groups-chrome-149-bug).
 
 Doing this manually for 20+ tabs across multiple tab groups, every time you restart Chrome, gets old fast. This extension automates it with a single click.
 
