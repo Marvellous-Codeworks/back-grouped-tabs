@@ -2,6 +2,10 @@
 
 A tiny unpacked Chrome extension that sends a single **Back** navigation to every tab that belongs to a [Chrome Tab Group](https://support.google.com/chrome/answer/12399726), leaving ungrouped tabs untouched.
 
+> [!IMPORTANT]  
+> **This extension exists for one reason only: to work around a specific Chrome bug.**
+> It has no other purpose. If Chrome ever fixes the underlying issue, this extension becomes completely useless and you should uninstall it. See *Why this exists* below.
+
 ## Why this exists
 
 After restarting Chrome, tabs that were suspended by extensions like [The Marvellous Suspender](https://github.com/gioxx/MarvellousSuspender) (or similar tab-suspending extensions) can come back as **blank `chrome://newtab/` pages** instead of their suspended placeholder page — even though the tab's browsing history still contains the correct `suspended.html#...` entry.
@@ -25,11 +29,12 @@ Tabs **not** in any tab group are never touched.
 
 ## Installation
 
-1. Download or clone this repository.
-2. Open `chrome://extensions` in Chrome.
-3. Enable **Developer mode** (toggle in the top-right corner).
-4. Click **"Load unpacked"** and select this folder.
-5. The extension icon will appear in your toolbar.
+1. Go to the [Releases page](https://github.com/Marvellous-Codeworks/back-grouped-tabs/releases) and download the latest `.zip` file.
+2. Extract the zip anywhere on your machine.
+3. Open `chrome://extensions` in Chrome.
+4. Enable **Developer mode** (toggle in the top-right corner).
+5. Click **"Load unpacked"** and select the extracted folder.
+6. The extension icon will appear in your toolbar.
 
 ## Usage
 
