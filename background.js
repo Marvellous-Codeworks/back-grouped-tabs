@@ -1,4 +1,4 @@
-chrome.action.onClicked.addListener(async () => {
+chrome.action.onClicked.addListener(async (activeTab) => {
   console.log("[BackGrouped] Click received");
 
   await chrome.action.setBadgeText({ text: "..." });
@@ -8,13 +8,12 @@ chrome.action.onClicked.addListener(async () => {
 
   try {
     const tabs = await chrome.tabs.query({});
+    const STUCK_URL = /^(chrome:\/\/newtab|about:blank|about:newtab)/i;
     const grouped = tabs.filter(
-      (t) => t.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE
+      (t) => t.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE &&
+        (t.discarded || STUCK_URL.test(t.url || t.pendingUrl || ''))
     );
     console.log(`[BackGrouped] Tabs in groups: ${grouped.length}`);
-
-    // Remember which tab was active in the current window
-    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     // Remember the collapsed state of every involved group
     const groupIds = [...new Set(grouped.map((t) => t.groupId))];
@@ -25,6 +24,13 @@ chrome.action.onClicked.addListener(async () => {
     }
 
     for (const tab of grouped) {
+      // Skip the tab the user is currently looking at
+      if (activeTab && tab.id === activeTab.id) {
+        console.log(`[BackGrouped] Skipping active tab ${tab.id} - ${tab.url}`);
+        skipped++;
+        continue;
+      }
+
       try {
         // Activate the tab to force history to load
         await chrome.tabs.update(tab.id, { active: true });
